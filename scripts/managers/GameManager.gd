@@ -19,7 +19,7 @@ extends Node
 ## Toggle in the Inspector to switch between 1-player and 2-player mode.
 ## true  = only P1 exists, P2 disabled
 ## false = both players active (default)
-@export var single_player_mode: bool = false
+@export var single_player_mode: bool = true
 
 ## Returns how many players are active this session.
 func get_active_player_count() -> int:
