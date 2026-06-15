@@ -204,6 +204,10 @@ enum HoldGrabMode {
 ## the SwordSlash01 frames so the player doesn't snap back to their
 ## starting position when the animation ends.
 @export_range(0.0, 40.0, 1.0, "suffix:px") var idle_attack_forward_offset: float = 8.0
+## Horizontal speed (px/s) the player is snapped to, in the facing direction,
+## when "run_attack" begins. Independent of move_speed so the run-attack lunge
+## can be tuned without affecting normal running speed.
+@export_range(50.0, 600.0, 10.0, "suffix:px/s") var run_attack_speed: float = 200.0
 
 @export_group("Respawn")
 ## Name of the Marker2D node in the room scene that marks this player's spawn point.
@@ -824,9 +828,10 @@ func _process_attack(delta: float) -> void:
 
 # ---------------------------------------------------------------------------
 # RUN ATTACK
-# Player keeps their current horizontal momentum (no acceleration or friction)
-# while "run_attack" plays — movement input is locked. AttackHitbox is enabled
-# only on attack_hitbox_active_frame via _on_sprite_frame_changed().
+# velocity.x is snapped to move_speed (in _set_state) on entry so the lunge
+# is consistent regardless of how long RUN had been running. No acceleration
+# or friction is applied here — movement input is locked. AttackHitbox is
+# enabled only on attack_hitbox_active_frame via _on_sprite_frame_changed().
 # _on_animation_finished() returns to IDLE.
 # ---------------------------------------------------------------------------
 func _process_run_attack(delta: float) -> void:
@@ -1784,6 +1789,14 @@ func _set_state(new_state: State) -> void:
 		State.RUN_ATTACK:
 			_sprite.play("run_attack")
 			_attack_cooldown_timer = attack_cooldown
+			# run_attack_speed is a floor, not an override — only bump velocity.x
+			# up if it's currently below that speed in the facing direction
+			# (e.g. attack pressed right as RUN begins, before acceleration has
+			# ramped up). If already running at or above run_attack_speed,
+			# existing momentum is preserved untouched.
+			var facing_speed := velocity.x * float(_facing_direction)
+			if facing_speed < run_attack_speed:
+				velocity.x = float(_facing_direction) * run_attack_speed
 		State.AIR_ATTACK:
 			_sprite.play("air_attack")
 			_attack_cooldown_timer = attack_cooldown
