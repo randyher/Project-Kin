@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://dp572jo7tdjvb"]
 
 [ext_resource type="Script" uid="uid://bmp6v1w1tp5tm" path="res://scenes/entities/players/Player.gd" id="1_k3m7n"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlash/AirSlash01.png" id="as1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlash/AirSlash02.png" id="as2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlash/AirSlash03.png" id="as3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlash/AirSlash04.png" id="as4"]
 [ext_resource type="Texture2D" uid="uid://kn1ytxfpja5x" path="res://assets/sprites/players/p1/ClimbGrab/ClimbGrab01.png" id="cg1"]
 [ext_resource type="Texture2D" uid="uid://cc4285vp6mxic" path="res://assets/sprites/players/p1/ClimbGrab/ClimbGrab02.png" id="cg2"]
 [ext_resource type="Texture2D" uid="uid://cfdpatfan7xt1" path="res://assets/sprites/players/p1/ClimbGrab/ClimbGrab03.png" id="cg3"]
@@ -1010,6 +1014,23 @@ animations = [{
 }],
 "loop": false,
 "name": &"run_attack",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("as1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("as2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("as3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("as4")
+}],
+"loop": false,
+"name": &"air_attack",
 "speed": 12.0
 }]
 
