@@ -199,6 +199,11 @@ enum HoldGrabMode {
 ## Shared cooldown (in seconds) between attacks. Applies to both idle_attack
 ## and run_attack — starts the moment either attack animation begins.
 @export_range(0.0, 2.0, 0.05, "suffix:s") var attack_cooldown: float = 0.4
+## Forward distance (px) the player is shifted, in the direction they're
+## facing, once "idle_attack" finishes. Matches the forward step drawn in
+## the SwordSlash01 frames so the player doesn't snap back to their
+## starting position when the animation ends.
+@export_range(0.0, 40.0, 1.0, "suffix:px") var idle_attack_forward_offset: float = 8.0
 
 @export_group("Respawn")
 ## Name of the Marker2D node in the room scene that marks this player's spawn point.
@@ -807,7 +812,9 @@ func _process_ground(input: Vector2, delta: float) -> void:
 # ATTACK (idle ground attack)
 # Player stands still while "idle_attack" plays. All movement input is
 # ignored. AttackHitbox is enabled only on attack_hitbox_active_frame via
-# _on_sprite_frame_changed(). _on_animation_finished() returns to IDLE.
+# _on_sprite_frame_changed(). _on_animation_finished() shifts the player
+# forward by idle_attack_forward_offset (matching the step drawn in the
+# animation frames) and returns to IDLE.
 # ---------------------------------------------------------------------------
 func _process_attack(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, friction * delta)
@@ -1803,8 +1810,11 @@ func _on_animation_finished() -> void:
 
 	# ---- idle_attack → IDLE ----
 	# Idle attack always returns to standing — _process_attack only runs from IDLE.
+	# Shift forward to match the step drawn in the animation frames so the
+	# player doesn't snap back to where they started.
 	elif _sprite.animation == &"idle_attack":
 		_disable_attack_hitbox()
+		global_position.x += float(_facing_direction) * idle_attack_forward_offset
 		_set_state(State.IDLE)
 
 	# ---- run_attack → IDLE ----

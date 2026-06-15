@@ -1040,6 +1040,7 @@ ledge_hang_fall_snap = 3.0
 entry_rise_speed = 180.0
 entry_descend_speed = 180.0
 attack_cooldown = 0.5
+idle_attack_forward_offset = 12.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=368623655]
 sprite_frames = SubResource("SpriteFrames_anim")
