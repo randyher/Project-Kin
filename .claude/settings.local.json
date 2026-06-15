@@ -33,7 +33,10 @@
       "Bash(xargs cat)",
       "Bash(jobs)",
       "Bash(awk '/node name=\"Player1\"/,/^\\\\[node/{print NR\": \"$0}' /Users/randyherasme/kin-slayer/scenes/world/Level01.tscn)",
-      "Bash(awk '/node name=\"Player[12]\"/,/^\\\\[node/{print NR\": \"$0}' /Users/randyherasme/kin-slayer/scenes/world/World.tscn)"
+      "Bash(awk '/node name=\"Player[12]\"/,/^\\\\[node/{print NR\": \"$0}' /Users/randyherasme/kin-slayer/scenes/world/World.tscn)",
+      "Bash(mkdir -p \"/Users/randyherasme/project-kin/assets/sprites/players/p1/SwordSlash01\")",
+      "Bash(cp \"/Users/randyherasme/Desktop/Prototype Assests/Pixel Prototype Player/Sprites/Combat/SwordSlash01/\"*.png \"/Users/randyherasme/project-kin/assets/sprites/players/p1/SwordSlash01/\")",
+      "Read(//Users/randyherasme/Desktop/Prototype Assests/Pixel Prototype Player/Sprites/Combat/SwordRunSlash/**)"
     ]
   }
 }

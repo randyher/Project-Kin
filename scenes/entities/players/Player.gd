@@ -188,6 +188,15 @@ enum HoldGrabMode {
 ## Size of HurtBox rectangle. Should cover the player body.
 @export var hurtbox_size: Vector2 = Vector2(16, 32)
 
+## Position of AttackHitbox relative to player center for the idle ground attack.
+## Positive x = forward (right-facing); mirrored automatically when facing left.
+@export var attack_hitbox_offset: Vector2 = Vector2(20, -5)
+## Size of AttackHitbox rectangle for the idle ground attack.
+@export var attack_hitbox_size: Vector2 = Vector2(20, 14)
+## Zero-indexed frame of the "idle_attack" animation during which AttackHitbox is active.
+## Frame 2 = SwordSlash0103.png.
+@export var attack_hitbox_active_frame: int = 2
+
 @export_group("Respawn")
 ## Name of the Marker2D node in the room scene that marks this player's spawn point.
 ## P1 uses "PlayerOneSpawn", P2 uses "PlayerTwoSpawn".
@@ -218,7 +227,7 @@ enum HoldGrabMode {
 # ---------------------------------------------------------------------------
 # An enum cleanly names each state so the rest of the code reads like English
 # instead of magic numbers.
-enum State { IDLE, RUN, JUMP, FALL, DASH, DUCK, CRAWL, WALL_SLIDE, WALL_CLIMB, LEDGE_HANG, LEDGE_CLIMB, HANG_IDLE, HANG_MOVE, HANG_EDGE, EXITING, BATTLE_ATTACK }
+enum State { IDLE, RUN, JUMP, FALL, DASH, DUCK, CRAWL, WALL_SLIDE, WALL_CLIMB, LEDGE_HANG, LEDGE_CLIMB, HANG_IDLE, HANG_MOVE, HANG_EDGE, EXITING, BATTLE_ATTACK, ATTACK, RUN_ATTACK }
 
 ## The player's current state. Read-only from outside; set via _set_state().
 var state: State = State.IDLE
@@ -248,6 +257,8 @@ var _base_gravity: float = ProjectSettings.get_setting("physics/2d/default_gravi
 @onready var _hit_box            : Area2D           = $HitBox
 @onready var _hit_box_shape      : CollisionShape2D = $HitBox/HitBoxShape
 @onready var _hurt_box           : Area2D           = $HurtBox
+@onready var _attack_hitbox      : Area2D           = $AttackHitbox
+@onready var _attack_hitbox_shape: CollisionShape2D = $AttackHitbox/AttackHitboxShape
 
 ## Which horizontal direction the player is facing: +1 = right, -1 = left.
 ## Used when dashing with no directional input (dash "forward").
@@ -446,6 +457,13 @@ func _ready() -> void:
 	_hurt_box.monitorable = false
 	_hurt_box.collision_layer = 4
 	_hurt_box.collision_mask  = 4
+	# AttackHitbox: only active during the active frame of "idle_attack".
+	_attack_hitbox.monitoring  = false
+	_attack_hitbox.monitorable = false
+	_attack_hitbox.collision_layer = 4
+	_attack_hitbox.collision_mask  = 4
+	(_attack_hitbox_shape.shape as RectangleShape2D).size = attack_hitbox_size
+	_sprite.frame_changed.connect(_on_sprite_frame_changed)
 	# _spawn_point is resolved lazily in trigger_respawn() so the room is
 	# guaranteed to be loaded when we look up the marker.
 	# Wait one frame so all players have added themselves to the "players" group,
@@ -536,6 +554,10 @@ func _physics_process(delta: float) -> void:
 			_process_dash(input, delta)
 		State.EXITING:
 			_process_exiting(delta)
+		State.ATTACK:
+			_process_attack(delta)
+		State.RUN_ATTACK:
+			_process_run_attack(delta)
 		State.BATTLE_ATTACK:
 			# All physics and input suspended during the attack sequence.
 			# BattleManager drives everything — _do_attack_sequence() controls
@@ -623,7 +645,8 @@ func _physics_process(delta: float) -> void:
 	var ledge_locked := (state == State.LEDGE_HANG or state == State.LEDGE_CLIMB
 						 or state == State.HANG_IDLE or state == State.HANG_MOVE
 						 or state == State.HANG_EDGE or state == State.EXITING
-						 or state == State.BATTLE_ATTACK)
+						 or state == State.BATTLE_ATTACK or state == State.ATTACK
+						 or state == State.RUN_ATTACK)
 	if state == State.HANG_EDGE:
 		# ClimbJumpPrepare is a single animation — flip it for the right edge.
 		_sprite.flip_h = (_hang_edge_dir == -1)
@@ -631,7 +654,7 @@ func _physics_process(delta: float) -> void:
 		if input.x != 0 and not ledge_locked:
 			_facing_direction = int(sign(input.x))
 		# Only auto-update flip when not in a locked state. Locked states
-		# (BATTLE_ATTACK, EXITING, ledge/hang) manage flip_h themselves.
+		# (BATTLE_ATTACK, ATTACK, RUN_ATTACK, EXITING, ledge/hang) manage flip_h themselves.
 		if not ledge_locked:
 			_sprite.flip_h = _facing_direction == -1
 
@@ -675,6 +698,8 @@ var _grip_just_pressed: bool = false
 ## in normal movement without accidentally triggering climb/pull-up.
 var _up_pressed: bool = false
 var _up_held: bool    = false
+## Real-time idle attack input (p1_square). Player 2 has no mapping yet.
+var _attack_pressed: bool = false
 
 func _get_input() -> Vector2:
 	# When battle_locked, ignore all player input.
@@ -688,6 +713,7 @@ func _get_input() -> Vector2:
 		_grip_just_pressed = false
 		_up_pressed        = false
 		_up_held           = false
+		_attack_pressed    = false
 		_input_x           = float(_battle_walk_direction)
 		return Vector2(float(_battle_walk_direction), 0.0)
 
@@ -704,6 +730,7 @@ func _get_input() -> Vector2:
 		_grip_just_pressed = Input.is_action_just_pressed("p1_r1")
 		_up_pressed        = Input.is_action_just_pressed("p1_up")
 		_up_held           = Input.is_action_pressed("p1_up")
+		_attack_pressed    = Input.is_action_just_pressed("p1_square")
 	else:
 		if Input.is_action_pressed("p2_right"):      dir.x += 1
 		if Input.is_action_pressed("p2_left"):       dir.x -= 1
@@ -715,6 +742,7 @@ func _get_input() -> Vector2:
 		_grip_just_pressed = Input.is_action_just_pressed("p2_r1")
 		_up_pressed        = Input.is_action_just_pressed("p2_up")
 		_up_held           = Input.is_action_pressed("p2_up")
+		_attack_pressed    = false
 
 	_input_x = dir.x
 	return dir
@@ -724,6 +752,18 @@ func _get_input() -> Vector2:
 # Handles horizontal acceleration / friction and jump initiation while grounded.
 # ---------------------------------------------------------------------------
 func _process_ground(input: Vector2, delta: float) -> void:
+	# --- Idle attack ---
+	# Can only be triggered from a standing idle — RUN, DUCK, etc. don't qualify.
+	if state == State.IDLE and _attack_pressed:
+		_set_state(State.ATTACK)
+		return
+
+	# --- Run attack ---
+	# Can only be triggered while running.
+	if state == State.RUN and _attack_pressed:
+		_set_state(State.RUN_ATTACK)
+		return
+
 	# --- Horizontal movement with acceleration and friction ---
 	if input.x != 0:
 		# Accelerate toward the target speed using move_toward so we never
@@ -753,6 +793,26 @@ func _process_ground(input: Vector2, delta: float) -> void:
 			_sprite.play("LookUp")
 	elif _sprite.animation == &"LookUp":
 		_sprite.play("Idle")
+
+# ---------------------------------------------------------------------------
+# ATTACK (idle ground attack)
+# Player stands still while "idle_attack" plays. All movement input is
+# ignored. AttackHitbox is enabled only on attack_hitbox_active_frame via
+# _on_sprite_frame_changed(). _on_animation_finished() returns to IDLE.
+# ---------------------------------------------------------------------------
+func _process_attack(delta: float) -> void:
+	velocity.x = move_toward(velocity.x, 0.0, friction * delta)
+	velocity.y += _base_gravity * delta
+
+# ---------------------------------------------------------------------------
+# RUN ATTACK
+# Player keeps their current horizontal momentum (no acceleration or friction)
+# while "run_attack" plays — movement input is locked. AttackHitbox is enabled
+# only on attack_hitbox_active_frame via _on_sprite_frame_changed().
+# _on_animation_finished() returns to IDLE.
+# ---------------------------------------------------------------------------
+func _process_run_attack(delta: float) -> void:
+	velocity.y += _base_gravity * delta
 
 # ---------------------------------------------------------------------------
 # DUCK
@@ -1513,7 +1573,8 @@ func _can_stand() -> bool:
 # Only called after movement so velocity is already updated for this frame.
 # ---------------------------------------------------------------------------
 func _update_state() -> void:
-	if state == State.EXITING or state == State.BATTLE_ATTACK:
+	if state == State.EXITING or state == State.BATTLE_ATTACK or state == State.ATTACK \
+			or state == State.RUN_ATTACK:
 		return
 
 	# Never interrupt an active dash from outside _process_dash().
@@ -1679,6 +1740,10 @@ func _set_state(new_state: State) -> void:
 			_sprite.play("ClimbLeft")
 		State.HANG_EDGE:
 			_sprite.play("ClimbJumpPrepare")
+		State.ATTACK:
+			_sprite.play("idle_attack")
+		State.RUN_ATTACK:
+			_sprite.play("run_attack")
 		State.EXITING:
 			# Don't change animation on exit — let whatever was playing continue.
 			# Exception: IDLE and LookUp are stationary; play Run in exit direction.
@@ -1722,6 +1787,17 @@ func _on_animation_finished() -> void:
 	# The grab animation plays once; afterwards the player idles on the ledge.
 	elif _sprite.animation == &"LedgeHang":
 		_sprite.play("LedgeHangIdle")
+
+	# ---- idle_attack → IDLE ----
+	# Idle attack always returns to standing — _process_attack only runs from IDLE.
+	elif _sprite.animation == &"idle_attack":
+		_disable_attack_hitbox()
+		_set_state(State.IDLE)
+
+	# ---- run_attack → IDLE ----
+	elif _sprite.animation == &"run_attack":
+		_disable_attack_hitbox()
+		_set_state(State.IDLE)
 
 	# ---- ClimbGrab (background hold entry) → ClimbIdle ----
 	# Mirrors the LedgeHang → LedgeHangIdle pattern exactly.
@@ -2162,6 +2238,31 @@ func _enable_hitbox() -> void:
 	(_hit_box_shape.shape as RectangleShape2D).size = hitbox_size
 	_hit_box.set_deferred("monitoring",  true)
 	_hit_box.set_deferred("monitorable", true)
+
+# ---------------------------------------------------------------------------
+# ATTACK HITBOX — idle ground attack
+# Enabled only on attack_hitbox_active_frame of "idle_attack", mirrored to
+# the player's facing direction so it always extends in front of them.
+# ---------------------------------------------------------------------------
+func _on_sprite_frame_changed() -> void:
+	if _sprite.animation != &"idle_attack" and _sprite.animation != &"run_attack":
+		return
+	if _sprite.frame == attack_hitbox_active_frame:
+		_enable_attack_hitbox()
+	else:
+		_disable_attack_hitbox()
+
+func _enable_attack_hitbox() -> void:
+	var offset: Vector2 = attack_hitbox_offset
+	if _sprite.flip_h:
+		offset.x = -offset.x
+	_attack_hitbox.position = offset
+	_attack_hitbox.set_deferred("monitoring",  true)
+	_attack_hitbox.set_deferred("monitorable", true)
+
+func _disable_attack_hitbox() -> void:
+	_attack_hitbox.set_deferred("monitoring",  false)
+	_attack_hitbox.set_deferred("monitorable", false)
 
 func _disable_hitbox() -> void:
 	_hit_box.set_deferred("monitoring",  false)
