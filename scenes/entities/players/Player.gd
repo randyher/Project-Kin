@@ -196,6 +196,12 @@ enum HoldGrabMode {
 ## Zero-indexed frame of the "idle_attack" animation during which AttackHitbox is active.
 ## Frame 2 = SwordSlash0103.png.
 @export var attack_hitbox_active_frame: int = 2
+## Position of AttackHitbox relative to player center for the air down attack.
+## Centered below the player; x is mirrored automatically when facing left.
+@export var air_attack_down_hitbox_offset: Vector2 = Vector2(0, 20)
+## Position of AttackHitbox relative to player center for the air up attack.
+## Centered above the player; x is mirrored automatically when facing left.
+@export var air_attack_up_hitbox_offset: Vector2 = Vector2(0, -20)
 ## Shared cooldown (in seconds) between attacks. Applies to both idle_attack
 ## and run_attack — starts the moment either attack animation begins.
 @export_range(0.0, 2.0, 0.05, "suffix:s") var attack_cooldown: float = 0.4
@@ -239,7 +245,7 @@ enum HoldGrabMode {
 # ---------------------------------------------------------------------------
 # An enum cleanly names each state so the rest of the code reads like English
 # instead of magic numbers.
-enum State { IDLE, RUN, JUMP, FALL, DASH, DUCK, CRAWL, WALL_SLIDE, WALL_CLIMB, LEDGE_HANG, LEDGE_CLIMB, HANG_IDLE, HANG_MOVE, HANG_EDGE, EXITING, BATTLE_ATTACK, ATTACK, RUN_ATTACK, AIR_ATTACK }
+enum State { IDLE, RUN, JUMP, FALL, DASH, DUCK, CRAWL, WALL_SLIDE, WALL_CLIMB, LEDGE_HANG, LEDGE_CLIMB, HANG_IDLE, HANG_MOVE, HANG_EDGE, EXITING, BATTLE_ATTACK, ATTACK, RUN_ATTACK, AIR_ATTACK, AIR_ATTACK_DOWN, AIR_ATTACK_UP }
 
 ## The player's current state. Read-only from outside; set via _set_state().
 var state: State = State.IDLE
@@ -574,7 +580,7 @@ func _physics_process(delta: float) -> void:
 			_process_attack(delta)
 		State.RUN_ATTACK:
 			_process_run_attack(delta)
-		State.AIR_ATTACK:
+		State.AIR_ATTACK, State.AIR_ATTACK_DOWN, State.AIR_ATTACK_UP:
 			_process_air_attack(delta)
 		State.BATTLE_ATTACK:
 			# All physics and input suspended during the attack sequence.
@@ -664,7 +670,8 @@ func _physics_process(delta: float) -> void:
 						 or state == State.HANG_IDLE or state == State.HANG_MOVE
 						 or state == State.HANG_EDGE or state == State.EXITING
 						 or state == State.BATTLE_ATTACK or state == State.ATTACK
-						 or state == State.RUN_ATTACK or state == State.AIR_ATTACK)
+						 or state == State.RUN_ATTACK or state == State.AIR_ATTACK
+						 or state == State.AIR_ATTACK_DOWN or state == State.AIR_ATTACK_UP)
 	if state == State.HANG_EDGE:
 		# ClimbJumpPrepare is a single animation — flip it for the right edge.
 		_sprite.flip_h = (_hang_edge_dir == -1)
@@ -672,7 +679,7 @@ func _physics_process(delta: float) -> void:
 		if input.x != 0 and not ledge_locked:
 			_facing_direction = int(sign(input.x))
 		# Only auto-update flip when not in a locked state. Locked states
-		# (BATTLE_ATTACK, ATTACK, RUN_ATTACK, AIR_ATTACK, EXITING, ledge/hang) manage flip_h themselves.
+		# (BATTLE_ATTACK, ATTACK, RUN_ATTACK, AIR_ATTACK(_DOWN/_UP), EXITING, ledge/hang) manage flip_h themselves.
 		if not ledge_locked:
 			_sprite.flip_h = _facing_direction == -1
 
@@ -838,12 +845,13 @@ func _process_run_attack(delta: float) -> void:
 	velocity.y += _base_gravity * delta
 
 # ---------------------------------------------------------------------------
-# AIR ATTACK
+# AIR ATTACK (neutral, down, up)
 # Preserves the player's current horizontal and vertical momentum — gravity
 # still applies normally so the jump arc continues uninterrupted, but air
-# control (direction changes, jumps, dashes) is locked while "air_attack"
-# plays. AttackHitbox is enabled only on attack_hitbox_active_frame via
-# _on_sprite_frame_changed(). _on_animation_finished() returns to JUMP/FALL.
+# control (direction changes, jumps, dashes) is locked while "air_attack",
+# "air_attack_down" or "air_attack_up" plays. AttackHitbox is enabled only on
+# attack_hitbox_active_frame via _on_sprite_frame_changed().
+# _on_animation_finished() returns to JUMP/FALL.
 # ---------------------------------------------------------------------------
 func _process_air_attack(delta: float) -> void:
 	velocity.y += _base_gravity * delta
@@ -1330,9 +1338,15 @@ func _start_wall_jump() -> void:
 func _process_air(input: Vector2, delta: float) -> void:
 	# --- Air attack ---
 	# Only while airborne (JUMP or FALL reach here). Shared attack_cooldown_timer
-	# must have elapsed since the last attack.
+	# must have elapsed since the last attack. Holding down/up redirects to the
+	# directional air attacks — they take priority over the neutral air attack.
 	if _attack_pressed and _attack_cooldown_timer <= 0.0:
-		_set_state(State.AIR_ATTACK)
+		if _down_held:
+			_set_state(State.AIR_ATTACK_DOWN)
+		elif _up_held:
+			_set_state(State.AIR_ATTACK_UP)
+		else:
+			_set_state(State.AIR_ATTACK)
 		return
 
 	# --- Horizontal air control ---
@@ -1617,7 +1631,8 @@ func _can_stand() -> bool:
 # ---------------------------------------------------------------------------
 func _update_state() -> void:
 	if state == State.EXITING or state == State.BATTLE_ATTACK or state == State.ATTACK \
-			or state == State.RUN_ATTACK or state == State.AIR_ATTACK:
+			or state == State.RUN_ATTACK or state == State.AIR_ATTACK \
+			or state == State.AIR_ATTACK_DOWN or state == State.AIR_ATTACK_UP:
 		return
 
 	# Never interrupt an active dash from outside _process_dash().
@@ -1800,6 +1815,12 @@ func _set_state(new_state: State) -> void:
 		State.AIR_ATTACK:
 			_sprite.play("air_attack")
 			_attack_cooldown_timer = attack_cooldown
+		State.AIR_ATTACK_DOWN:
+			_sprite.play("air_attack_down")
+			_attack_cooldown_timer = attack_cooldown
+		State.AIR_ATTACK_UP:
+			_sprite.play("air_attack_up")
+			_attack_cooldown_timer = attack_cooldown
 		State.EXITING:
 			# Don't change animation on exit — let whatever was playing continue.
 			# Exception: IDLE and LookUp are stationary; play Run in exit direction.
@@ -1858,10 +1879,11 @@ func _on_animation_finished() -> void:
 		_disable_attack_hitbox()
 		_set_state(State.IDLE)
 
-	# ---- air_attack → JUMP/FALL ----
+	# ---- air_attack / air_attack_down / air_attack_up → JUMP/FALL ----
 	# Return to whichever airborne animation matches current vertical momentum —
 	# rising continues as JUMP, falling/level continues as FALL.
-	elif _sprite.animation == &"air_attack":
+	elif _sprite.animation == &"air_attack" or _sprite.animation == &"air_attack_down" \
+			or _sprite.animation == &"air_attack_up":
 		_disable_attack_hitbox()
 		_set_state(State.JUMP if velocity.y < 0.0 else State.FALL)
 
@@ -2311,19 +2333,26 @@ func _enable_hitbox() -> void:
 # the player's facing direction so it always extends in front of them.
 # ---------------------------------------------------------------------------
 func _on_sprite_frame_changed() -> void:
-	if _sprite.animation != &"idle_attack" and _sprite.animation != &"run_attack" \
-			and _sprite.animation != &"air_attack":
+	var anim := _sprite.animation
+	if anim != &"idle_attack" and anim != &"run_attack" and anim != &"air_attack" \
+			and anim != &"air_attack_down" and anim != &"air_attack_up":
 		return
-	if _sprite.frame == attack_hitbox_active_frame:
-		_enable_attack_hitbox()
-	else:
+	if _sprite.frame != attack_hitbox_active_frame:
 		_disable_attack_hitbox()
+		return
+	match anim:
+		&"air_attack_down":
+			_enable_attack_hitbox(air_attack_down_hitbox_offset)
+		&"air_attack_up":
+			_enable_attack_hitbox(air_attack_up_hitbox_offset)
+		_:
+			_enable_attack_hitbox(attack_hitbox_offset)
 
-func _enable_attack_hitbox() -> void:
-	var offset: Vector2 = attack_hitbox_offset
+func _enable_attack_hitbox(offset: Vector2) -> void:
+	var pos: Vector2 = offset
 	if _sprite.flip_h:
-		offset.x = -offset.x
-	_attack_hitbox.position = offset
+		pos.x = -pos.x
+	_attack_hitbox.position = pos
 	_attack_hitbox.set_deferred("monitoring",  true)
 	_attack_hitbox.set_deferred("monitorable", true)
 

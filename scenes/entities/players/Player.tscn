@@ -5,6 +5,18 @@
 [ext_resource type="Texture2D" uid="uid://n10geux2ank8" path="res://assets/sprites/players/p1/AirSlash/AirSlash02.png" id="as2"]
 [ext_resource type="Texture2D" uid="uid://dprjadi1tpe7n" path="res://assets/sprites/players/p1/AirSlash/AirSlash03.png" id="as3"]
 [ext_resource type="Texture2D" uid="uid://d2poa8au7f0kl" path="res://assets/sprites/players/p1/AirSlash/AirSlash04.png" id="as4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashDown/AirSlashDown01.png" id="asd1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashDown/AirSlashDown02.png" id="asd2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashDown/AirSlashDown03.png" id="asd3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashDown/AirSlashDown04.png" id="asd4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashDown/AirSlashDown05.png" id="asd5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashDown/AirSlashDown06.png" id="asd6"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashUp/AirSlashUp01.png" id="asu1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashUp/AirSlashUp02.png" id="asu2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashUp/AirSlashUp03.png" id="asu3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashUp/AirSlashUp04.png" id="asu4"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashUp/AirSlashUp05.png" id="asu5"]
+[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/AirSlashUp/AirSlashUp06.png" id="asu6"]
 [ext_resource type="Texture2D" uid="uid://kn1ytxfpja5x" path="res://assets/sprites/players/p1/ClimbGrab/ClimbGrab01.png" id="cg1"]
 [ext_resource type="Texture2D" uid="uid://cc4285vp6mxic" path="res://assets/sprites/players/p1/ClimbGrab/ClimbGrab02.png" id="cg2"]
 [ext_resource type="Texture2D" uid="uid://cfdpatfan7xt1" path="res://assets/sprites/players/p1/ClimbGrab/ClimbGrab03.png" id="cg3"]
@@ -1031,6 +1043,52 @@ animations = [{
 }],
 "loop": false,
 "name": &"run_attack",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("asd1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asd2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asd3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asd4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asd5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asd6")
+}],
+"loop": false,
+"name": &"air_attack_down",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("asu1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asu2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asu3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asu4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asu5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("asu6")
+}],
+"loop": false,
+"name": &"air_attack_up",
 "speed": 12.0
 }]
 
