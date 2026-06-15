@@ -196,6 +196,9 @@ enum HoldGrabMode {
 ## Zero-indexed frame of the "idle_attack" animation during which AttackHitbox is active.
 ## Frame 2 = SwordSlash0103.png.
 @export var attack_hitbox_active_frame: int = 2
+## Shared cooldown (in seconds) between attacks. Applies to both idle_attack
+## and run_attack — starts the moment either attack animation begins.
+@export_range(0.0, 2.0, 0.05, "suffix:s") var attack_cooldown: float = 0.4
 
 @export_group("Respawn")
 ## Name of the Marker2D node in the room scene that marks this player's spawn point.
@@ -277,6 +280,10 @@ var _dash_timer: float = 0.0       # counts down while a dash is active
 var _dash_cooldown_timer: float = 0.0  # counts down between dashes
 var _air_dashes_used: int = 0      # resets to 0 each time the player lands
 var _dash_direction: float = 0.0   # horizontal direction of the current dash
+
+# Counts down from attack_cooldown when idle_attack or run_attack begins.
+# Both attacks share this cooldown, set in _set_state().
+var _attack_cooldown_timer: float = 0.0
 
 # Tracks whether the player was on the floor last frame.
 # Used to detect the exact frame of landing so we can reset air abilities.
@@ -754,13 +761,15 @@ func _get_input() -> Vector2:
 func _process_ground(input: Vector2, delta: float) -> void:
 	# --- Idle attack ---
 	# Can only be triggered from a standing idle — RUN, DUCK, etc. don't qualify.
-	if state == State.IDLE and _attack_pressed:
+	# Shared attack_cooldown_timer must have elapsed since the last attack.
+	if state == State.IDLE and _attack_pressed and _attack_cooldown_timer <= 0.0:
 		_set_state(State.ATTACK)
 		return
 
 	# --- Run attack ---
 	# Can only be triggered while running.
-	if state == State.RUN and _attack_pressed:
+	# Shared attack_cooldown_timer must have elapsed since the last attack.
+	if state == State.RUN and _attack_pressed and _attack_cooldown_timer <= 0.0:
 		_set_state(State.RUN_ATTACK)
 		return
 
@@ -1496,6 +1505,8 @@ func _tick_timers(delta: float) -> void:
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
 	# _dash_timer is ticked inside _process_dash() so it only runs while dashing.
 
+	_attack_cooldown_timer = maxf(_attack_cooldown_timer - delta, 0.0)
+
 	if _invincible_timer > 0.0:
 		_invincible_timer = maxf(_invincible_timer - delta, 0.0)
 
@@ -1742,8 +1753,10 @@ func _set_state(new_state: State) -> void:
 			_sprite.play("ClimbJumpPrepare")
 		State.ATTACK:
 			_sprite.play("idle_attack")
+			_attack_cooldown_timer = attack_cooldown
 		State.RUN_ATTACK:
 			_sprite.play("run_attack")
+			_attack_cooldown_timer = attack_cooldown
 		State.EXITING:
 			# Don't change animation on exit — let whatever was playing continue.
 			# Exception: IDLE and LookUp are stationary; play Run in exit direction.

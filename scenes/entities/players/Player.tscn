@@ -165,6 +165,18 @@
 [ext_resource type="Texture2D" uid="uid://b5e2x5atr48x2" path="res://assets/sprites/players/p1/Roll/Roll08.png" id="ro8"]
 [ext_resource type="Texture2D" uid="uid://dthtwgpq1hkfa" path="res://assets/sprites/players/p1/Roll/Roll09.png" id="ro9"]
 [ext_resource type="Texture2D" uid="uid://0n2us1cdvex2" path="res://assets/sprites/players/p1/Roll/Roll10.png" id="ro10"]
+[ext_resource type="Texture2D" uid="uid://bw272u1g7ec6v" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash01.png" id="rs1"]
+[ext_resource type="Texture2D" uid="uid://dd1mobwp1ws0m" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash02.png" id="rs2"]
+[ext_resource type="Texture2D" uid="uid://bqxf8tdxn1stt" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash03.png" id="rs3"]
+[ext_resource type="Texture2D" uid="uid://byqqn50e1yp5x" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash04.png" id="rs4"]
+[ext_resource type="Texture2D" uid="uid://ctfswb8ebms1q" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0101.png" id="ss1"]
+[ext_resource type="Texture2D" uid="uid://cqbafex5nisi2" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0102.png" id="ss2"]
+[ext_resource type="Texture2D" uid="uid://cpw45p78brcbp" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0103.png" id="ss3"]
+[ext_resource type="Texture2D" uid="uid://fgnj432qghjj" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0104.png" id="ss4"]
+[ext_resource type="Texture2D" uid="uid://dxlxtmr7gbjad" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0105.png" id="ss5"]
+[ext_resource type="Texture2D" uid="uid://dkjb603f6gk3f" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0106.png" id="ss6"]
+[ext_resource type="Texture2D" uid="uid://bgf6gvh5dsg1a" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0107.png" id="ss7"]
+[ext_resource type="Texture2D" uid="uid://v0jhxmb6eiac" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0108.png" id="ss8"]
 [ext_resource type="Texture2D" uid="uid://dux2ryvxd2k3d" path="res://assets/sprites/players/p1/WallClimb/WallClimb01.png" id="wc1"]
 [ext_resource type="Texture2D" uid="uid://0wx0aiokxkmx" path="res://assets/sprites/players/p1/WallClimb/WallClimb02.png" id="wc2"]
 [ext_resource type="Texture2D" uid="uid://scmgp5wbeb34" path="res://assets/sprites/players/p1/WallClimb/WallClimb03.png" id="wc3"]
@@ -196,22 +208,6 @@
 [ext_resource type="Texture2D" uid="uid://urekosoitu6b" path="res://assets/sprites/players/p1/WallSlide/WallSlide04.png" id="wsl4"]
 [ext_resource type="Texture2D" uid="uid://q78b21lbay5m" path="res://assets/sprites/players/p1/WallSlide/WallSlide05.png" id="wsl5"]
 [ext_resource type="Texture2D" uid="uid://cmjkr7guq46b1" path="res://assets/sprites/players/p1/WallSlide/WallSlide06.png" id="wsl6"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0101.png" id="ss1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0102.png" id="ss2"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0103.png" id="ss3"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0104.png" id="ss4"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0105.png" id="ss5"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0106.png" id="ss6"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0107.png" id="ss7"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordSlash01/SwordSlash0108.png" id="ss8"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash01.png" id="rs1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash02.png" id="rs2"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash03.png" id="rs3"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash04.png" id="rs4"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash05.png" id="rs5"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash06.png" id="rs6"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash07.png" id="rs7"]
-[ext_resource type="Texture2D" path="res://assets/sprites/players/p1/SwordRunSlash/SwordRunSlash08.png" id="rs8"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_anim"]
 animations = [{
@@ -571,35 +567,6 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("ss1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("ss2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("ss3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("ss4")
-}, {
-"duration": 1.0,
-"texture": ExtResource("ss5")
-}, {
-"duration": 1.0,
-"texture": ExtResource("ss6")
-}, {
-"duration": 1.0,
-"texture": ExtResource("ss7")
-}, {
-"duration": 1.0,
-"texture": ExtResource("ss8")
-}],
-"loop": false,
-"name": &"idle_attack",
-"speed": 12.0
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": ExtResource("j1")
 }, {
 "duration": 1.0,
@@ -888,35 +855,6 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("rs1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("rs2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("rs3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("rs4")
-}, {
-"duration": 1.0,
-"texture": ExtResource("rs5")
-}, {
-"duration": 1.0,
-"texture": ExtResource("rs6")
-}, {
-"duration": 1.0,
-"texture": ExtResource("rs7")
-}, {
-"duration": 1.0,
-"texture": ExtResource("rs8")
-}],
-"loop": false,
-"name": &"run_attack",
-"speed": 12.0
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": ExtResource("wc1")
 }, {
 "duration": 1.0,
@@ -1027,6 +965,52 @@ animations = [{
 "loop": true,
 "name": &"WallSlide",
 "speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("ss1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ss2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ss3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ss4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ss5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ss6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ss7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ss8")
+}],
+"loop": false,
+"name": &"idle_attack",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("rs1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("rs2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("rs3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("rs4")
+}],
+"loop": false,
+"name": &"run_attack",
+"speed": 12.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_r5t2w"]
@@ -1055,6 +1039,7 @@ stamina_max = 60.0
 ledge_hang_fall_snap = 3.0
 entry_rise_speed = 180.0
 entry_descend_speed = 180.0
+attack_cooldown = 0.5
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=368623655]
 sprite_frames = SubResource("SpriteFrames_anim")
@@ -1108,12 +1093,12 @@ monitorable = false
 position = Vector2(0, -10)
 shape = SubResource("PlayerHurtBoxShape")
 
-[node name="AttackHitbox" type="Area2D" parent="."]
+[node name="AttackHitbox" type="Area2D" parent="." unique_id=1949604882]
 collision_layer = 4
 collision_mask = 4
 monitoring = false
 monitorable = false
 
-[node name="AttackHitboxShape" type="CollisionShape2D" parent="AttackHitbox"]
+[node name="AttackHitboxShape" type="CollisionShape2D" parent="AttackHitbox" unique_id=237681307]
 position = Vector2(20, -5)
 shape = SubResource("AttackHitBoxShape")
