@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 GameManager="*uid://w5kl22gdrqcw"
 RoomManager="*uid://crbegojfvx8j5"
 BattleManager="*uid://da3hybhdigh05"
+DialogueManager="*res://scripts/managers/DialogueManager.gd"
 
 [input]
 

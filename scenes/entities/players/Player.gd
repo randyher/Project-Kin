@@ -166,6 +166,12 @@ enum HoldGrabMode {
 ## When true, all player input is ignored. BattleManager controls movement.
 ## Set automatically by BattleManager.start_battle() — do not set manually.
 @export var battle_locked: bool = false
+
+@export_group("Dialogue")
+## When true, all player input is ignored and movement/attacks are frozen.
+## Set automatically by DialogueManager while a conversation is active —
+## do not set manually.
+@export var dialogue_locked: bool = false
 ## Pause between landing Punch01 and turning away to dash back.
 ## Tune for dramatic effect — longer = more weight, shorter = snappier.
 @export_range(0.0, 2.0, 0.05, "suffix:s") var attack_pause_duration: float = 0.2
@@ -727,6 +733,21 @@ var _up_held: bool    = false
 var _attack_pressed: bool = false
 
 func _get_input() -> Vector2:
+	# When dialogue_locked, freeze all player input entirely.
+	# DialogueManager drives the conversation UI instead.
+	if dialogue_locked:
+		_jump_pressed      = false
+		_jump_held         = false
+		_dash_pressed      = false
+		_down_held         = false
+		_grip_held         = false
+		_grip_just_pressed = false
+		_up_pressed        = false
+		_up_held           = false
+		_attack_pressed    = false
+		_input_x           = 0.0
+		return Vector2.ZERO
+
 	# When battle_locked, ignore all player input.
 	# BattleManager drives movement via battle_walk() / battle_stop() instead.
 	if battle_locked:

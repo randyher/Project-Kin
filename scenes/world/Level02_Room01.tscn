@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dle44gyxm5v4j" path="res://assets/sprites/environments/magic-castle/magic-castle-tiles.png" id="2_6sr4u"]
 [ext_resource type="Texture2D" uid="uid://c15plkcxkhseb" path="res://assets/tilesets/magic-castle-sprites.png" id="3_indhg"]
 [ext_resource type="Texture2D" uid="uid://c07ju8o3sctvy" path="res://assets/sprites/environments/Volcanic Area Files/Environment/tileset.png" id="4_indhg"]
+[ext_resource type="PackedScene" uid="uid://6w5ul7wwnku0" path="res://scenes/entities/npcs/NPC.tscn" id="5_npc"]
 
 [sub_resource type="RectangleShape2D" id="Shape_bounds"]
 size = Vector2(1151, 646)
@@ -442,6 +443,13 @@ curve = SubResource("Curve2D_p1_entry")
 
 [node name="PlayerTwoEntryPath" type="Path2D" parent="." unique_id=1486464130]
 curve = SubResource("Curve2D_p2_entry")
+
+[node name="Stranger" parent="." unique_id=1713295487 instance=ExtResource("5_npc")]
+position = Vector2(256, 391)
+dialogue_lines = Array[String](["Hello, traveler.", "These lands have grown dark.", "Be careful out there."])
+npc_name = "Stranger"
+interaction_radius = 36.0
+prompt_offset = Vector2(0, -20)
 
 [node name="Platforms" type="TileMapLayer" parent="." unique_id=1189326784]
 position = Vector2(59, 18)
