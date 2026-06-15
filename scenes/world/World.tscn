@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://dre8xtcmix8ob"]
+
+[ext_resource type="PackedScene" uid="uid://dp572jo7tdjvb" path="res://scenes/entities/players/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/world/RoomCamera.tscn" id="2_camera"]
+[ext_resource type="PackedScene" uid="uid://cyehcitmifcte" path="res://scenes/ui/HUD.tscn" id="3_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/PauseMenu.tscn" id="4_pause"]
+[ext_resource type="PackedScene" uid="uid://dbb3n0vm8jxkj" path="res://scenes/ui/BattleActionMenu.tscn" id="5_battle_menu"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ActionCommand.tscn" id="6_action_cmd"]
+
+[node name="World" type="Node2D" unique_id=2034841482]
+
+[node name="RoomCamera" parent="." unique_id=1284126861 instance=ExtResource("2_camera")]
+
+[node name="Player1" parent="." unique_id=331199887 instance=ExtResource("1_player")]
+position = Vector2(200, 300)
+player_color = Color(0.24313726, 0.57254905, 1, 1)
+
+[node name="Player2" parent="." unique_id=1461399976 instance=ExtResource("1_player")]
+position = Vector2(300, 300)
+player_id = 2
+player_color = Color(0.22920999, 0.764438, 0.34828106, 1)
+spawn_marker_name = "PlayerTwoSpawn"
+
+[node name="HUD" parent="." unique_id=2056495564 instance=ExtResource("3_hud")]
+
+[node name="PauseMenu" parent="." unique_id=337874137 instance=ExtResource("4_pause")]
+
+[node name="BattleActionMenu" parent="." unique_id=1117156768 instance=ExtResource("5_battle_menu")]
+
+[node name="ActionCommand" parent="." unique_id=22686006 instance=ExtResource("6_action_cmd")]
+button_radius = 11.0
